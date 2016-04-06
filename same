@@ -1,0 +1,9 @@
+#!/usr/bin/env python3
+inp = input('tbh (recording) $ ')
+
+while not inp == 'donezo':
+    print(inp)
+    
+
+print('gottem')
+
