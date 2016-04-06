@@ -3,10 +3,17 @@ import subprocess
 import json
 
 
-hist = json.loads('~/same')
-for inp in hist:
-    print('tbh $ ' + inp)
+hist = []
+inp = input('tbh (recording) $ ')
+
+while not inp == 'donezo':
     subprocess.call(inp)
+    hist.append(inp)
+    inp = input('tbh (recording) $ ')
+
+# save hist
+with open('~/.same', 'w') as f:
+    f.write(json.dumps(hist))
 
 print('gottem')
 
