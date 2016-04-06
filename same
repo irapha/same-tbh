@@ -1,9 +1,19 @@
 #!/usr/bin/env python3
+import subprocess
+import json
+
+
+hist = []
 inp = input('tbh (recording) $ ')
 
 while not inp == 'donezo':
-    print(inp)
-    
+    subprocess.call(inp)
+    hist.append(inp)
+    inp = input('tbh (recording) $ ')
+
+# save hist
+with open('~/.same') as f:
+    f.write(json.dumps(hist))
 
 print('gottem')
 
