@@ -107,12 +107,17 @@ def parse_args():
             description="Execute a saved macro",
             help='same help')
     same_parser.add_argument('macro', help='The macro to modify', nargs='?')
+    same_parser.add_argument('--except', help='Replacements to make in the commands', nargs='*')
     
     wtf_parser = subparsers.add_parser('wtf',
             description="Find macro names or definitions",
             help='wtf help')
     wtf_parser.add_argument('macro', help='The macro to modify', nargs='?')
 
+    # allow user to say except instead of --except
+    sys.argv = list(map(lambda x: '--except' if x == 'except' else x, sys.argv))
+
+    # default subcommand is record
     if len(sys.argv) == 1 or sys.argv[1] not in ['record', 'fuk', 'same', 'wtf', '-h', '--help']:
         return parser.parse_args(['record'] + sys.argv[1:])
     else:
@@ -121,6 +126,10 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
+    
+    if args.macro in ['same', 'record', 'fuk', 'wtf', 'except', 'tbh']:
+        print('nah dude, bad macro')
+        sys.exit()
 
     if args.command == 'record':
         save(record(), macro=args.macro)
