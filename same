@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-import subprocess
 import json
+import os
 
 # load history from ~/.same
 f_name = os.path.join(os.path.join(os.path.expanduser('~'), '.same'))
@@ -9,8 +9,8 @@ with open(f_name, 'r') as f:
     hist = json.loads(f.read())
 
     for inp in hist:
-        print('tbh $ ' + inp)
-        subprocess.call(inp)
+        print('same $ ' + inp)
+        os.system(inp)
 
-    print('gottem')
+print('gottem')
 
