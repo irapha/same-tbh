@@ -59,6 +59,7 @@ def save(commands, macro=None):
     print('gottem')
 
 def delete(macro=None):
+    """Deletes a macro from ~/.same"""
     hist = load(all_macros=True)
     
     if macro is None: macro = 'dude'
@@ -74,6 +75,7 @@ def delete(macro=None):
     print(macro + ' got rekt')
 
 def find(macro=None):
+    """Finds and lists macro names, or a specified macro"""
     hist = load(all_macros=True)
 
     if macro is None:
@@ -86,7 +88,7 @@ def find(macro=None):
     else:
         print(macro + ': ' + str(hist[macro]))
 
-if __name__ == '__main__':
+def parse_args():
     parser = argparse.ArgumentParser(description="Record and execute bash macros.")
     subparsers = parser.add_subparsers(help="sucommand help", dest='command')
 
@@ -111,9 +113,13 @@ if __name__ == '__main__':
     wtf_parser.add_argument('macro', help='The macro to modify', nargs='?')
 
     if len(sys.argv) == 1 or sys.argv[1] not in ['record', 'fuk', 'same', 'wtf', '-h', '--help']:
-        args = parser.parse_args(['record'] + sys.argv[1:])
+        return parser.parse_args(['record'] + sys.argv[1:])
     else:
-        args = parser.parse_args()
+        return parser.parse_args()
+
+
+if __name__ == '__main__':
+    args = parse_args()
 
     if args.command == 'record':
         save(record(), macro=args.macro)
