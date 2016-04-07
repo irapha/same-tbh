@@ -22,15 +22,29 @@ def load(macro=None, all_macros=False):
     except FileNotFoundError:
         return {}
 
-def execute(commands):
+def execute(commands, exceptions={}, opposite=False):
     """Execute a list of bash commands."""
     if not commands: 
         print('nothing to same')
         return
 
-    for inp in commands:
-        print('same $ ' + inp)
-        os.system(inp)
+    if opposite:
+        commands = reversed(commands)
+
+    keys, replacements = exceptions
+    if len(replacements) == 0:
+        # nothing to replace
+        for inp in commands:
+            print('same $ ' + inp)
+            os.system(inp)
+    else:
+        for replacement in replacements:
+            for inp in commands:
+                for k, v in zip(keys, replacement):
+                    inp = inp.replace(k, v)
+            
+                print('same $ ' + inp)
+                os.system(inp)
 
     print('gottem')
 
@@ -123,10 +137,31 @@ def parse_args():
     else:
         return parser.parse_args()
 
+def parse_exceptions(args):
+    exceptions = {}
+    num_replacements = None
+    for arg in vars(args)['except']:
+        if arg != 'opposite':
+            key, val = arg.split('=')
+            exceptions[key] = val.split(',')
+
+            # assert all exceptions have same len
+            if not num_replacements:
+                num_replacements = len(exceptions[key])
+            elif num_replacements != len(exceptions[key]):
+                print('nah dude. u need same number of replacements per variable.')
+                sys.exit(1)
+
+    # magic to make exceptions be of form:
+    # ((key1, key2), [(key1_replacement1, key2_rep1), (key1_rep2, key2_rep2), ...])
+    all_vars = list(exceptions.keys())
+    exceptions = (all_vars, list(zip(*[exceptions[key] for key in all_vars])))
+    return exceptions
+
 
 if __name__ == '__main__':
     args = parse_args()
-    
+
     if args.macro in ['same', 'record', 'fuk', 'wtf', 'except', 'tbh']:
         print('nah dude, bad macro')
         sys.exit()
@@ -134,7 +169,9 @@ if __name__ == '__main__':
     if args.command == 'record':
         save(record(), macro=args.macro)
     elif args.command == 'same':
-        execute(load(macro=args.macro))
+        opposite = 'opposite' in vars(args)['except']
+        exceptions = parse_exceptions(args)
+        execute(load(macro=args.macro), exceptions=exceptions, opposite=opposite)
     elif args.command == 'fuk':
         delete(args.macro)
     elif args.command == 'wtf':
