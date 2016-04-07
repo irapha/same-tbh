@@ -9,6 +9,7 @@ F_NAME = os.path.join(os.path.join(os.path.expanduser('~'), '.same'))
 
 def load(macro=None, all_macros=False):
     """Load history from ~/.same"""
+    if macro is None: macro = 'dude'
     try:
         with open(F_NAME, 'r') as f:
             hist = json.loads(f.read())
