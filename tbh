@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import subprocess
 import json
-
+import os
 
 hist = []
 inp = input('tbh (recording) $ ')
@@ -11,8 +11,9 @@ while not inp == 'donezo':
     hist.append(inp)
     inp = input('tbh (recording) $ ')
 
-# save hist
-with open('~/.same', 'w') as f:
+# save hist to ~/.same
+f_name = os.path.join(os.path.join(os.path.expanduser('~'), '.same'))
+with open(f_name, 'w') as f:
     f.write(json.dumps(hist))
 
 print('gottem')

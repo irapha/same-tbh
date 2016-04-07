@@ -2,11 +2,15 @@
 import subprocess
 import json
 
+# load history from ~/.same
+f_name = os.path.join(os.path.join(os.path.expanduser('~'), '.same'))
 
-hist = json.loads('~/same')
-for inp in hist:
-    print('tbh $ ' + inp)
-    subprocess.call(inp)
+with open(f_name, 'r') as f:
+    hist = json.loads(f.read())
 
-print('gottem')
+    for inp in hist:
+        print('tbh $ ' + inp)
+        subprocess.call(inp)
+
+    print('gottem')
 
