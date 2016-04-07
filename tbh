@@ -90,7 +90,7 @@ def find(macro=None):
         print(macro + ': ' + str(hist[macro]))
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Record and execute bash macros.")
+    parser = argparse.ArgumentParser(description="Record and execute vim-like bash macros.")
     subparsers = parser.add_subparsers(help="sucommand help", dest='command')
 
     default_parser = subparsers.add_parser('record',
