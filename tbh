@@ -2,18 +2,54 @@
 import json
 import os
 
-hist = []
-inp = input('tbh (recording) $ ')
+F_NAME = os.path.join(os.path.join(os.path.expanduser('~'), '.same'))
 
-while not inp == 'donezo':
-    os.system(inp)
-    hist.append(inp)
+
+def load():
+    """Load history from ~/.same"""
+    try:
+        with open(F_NAME, 'r') as f:
+            return json.loads(f.read())
+    except FileNotFoundError:
+        return {}
+
+def execute(commands):
+    """Execute a list of bash commands."""
+    if not commands: 
+        print('nothing to same')
+        return
+
+    for inp in commands:
+        print('same $ ' + inp)
+        os.system(inp)
+
+    print('gottem')
+
+def record():
+    """Record a list of bash command."""
+    hist = []
     inp = input('tbh (recording) $ ')
 
-# save hist to ~/.same
-f_name = os.path.join(os.path.join(os.path.expanduser('~'), '.same'))
-with open(f_name, 'w') as f:
-    f.write(json.dumps(hist))
+    while not inp == 'donezo':
+        os.system(inp)
+        hist.append(inp)
+        inp = input('tbh (recording) $ ')
 
-print('gottem')
+    return hist
 
+def save(commands, macro='dude'):
+    """Save commands to ~/.same"""
+    if not commands: return
+
+    hist = load()
+    hist[macro] = commands
+
+    with open(F_NAME, 'w') as f:
+        f.write(json.dumps(hist))
+    
+    print('gottem')
+
+if __name__ == '__main__':
+    save(record())
+# if __name__ == '__main__':
+    # execute(load()[macro])
