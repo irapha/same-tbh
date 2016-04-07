@@ -77,7 +77,10 @@ def find(macro=None):
     hist = load(all_macros=True)
 
     if macro is None:
-        print('macros: ' + ', '.join(hist.keys()))
+        if len(hist) == 0:
+            print('no macros saved')
+        else:
+            print('macros: ' + ', '.join(hist.keys()))
     elif macro not in hist:
         print('macro not found: ' + macro)
     else:
