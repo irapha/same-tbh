@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
+import argparse
 import json
+import sys
 import os
 
 F_NAME = os.path.join(os.path.join(os.path.expanduser('~'), '.same'))
@@ -49,7 +51,47 @@ def save(commands, macro='dude'):
     
     print('gottem')
 
+def delete(macro='dude'):
+    hist = load()
+    
+    if macro not in hist:
+        print('macro not found')
+        return
+
+    del hist[macro]
+
+    with open(F_NAME, 'w') as f:
+        f.write(json.dumps(hist))
+
+    print(macro + ' got rekt')
+
 if __name__ == '__main__':
-    save(record())
-# if __name__ == '__main__':
-    # execute(load()[macro])
+    parser = argparse.ArgumentParser(description="Record and execute bash macros.")
+    subparsers = parser.add_subparsers(help="sucommand help", dest='command')
+
+    default_parser = subparsers.add_parser('record',
+            description="Default command. Record series of bash commands",
+            help='Default command. record help')
+    default_parser.add_argument('macro', help='The macro to modify', nargs='?', default='dude')
+
+    fuk_parser = subparsers.add_parser('fuk',
+            description="Delete a macro",
+            help='fuk help')
+    fuk_parser.add_argument('macro', help='The macro to modify', nargs='?', default='dude')
+
+    same_parser = subparsers.add_parser('same',
+            description="Execute a saved macro",
+            help='same help')
+    same_parser.add_argument('macro', help='The macro to modify', nargs='?', default='dude')
+
+    if len(sys.argv) == 1 or sys.argv[1] not in ['record', 'fuk', 'same']:
+        args = parser.parse_args(['record'] + sys.argv[1:])
+    else:
+        args = parser.parse_args()
+
+    if args.command == 'record':
+        save(record(), macro=args.macro)
+    elif args.command == 'same':
+        execute(load()[args.macro])
+    elif args.command == 'fuk':
+        delete(args.macro)
