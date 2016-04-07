@@ -54,8 +54,13 @@ def record():
     inp = input('tbh (recording) $ ')
 
     while not inp == 'donezo':
-        os.system(inp)
-        hist.append(inp)
+        # only allow running tbh inside tbh if we're wtf-ing or same-ing
+        if inp.split(' ')[0] in ['tbh', './tbh'] and (len(inp.split(' ')) == 1
+                or not any(x == inp.split(' ')[1] for x in ['wtf', 'same'])):
+            print('pls no')
+        else:
+            os.system(inp)
+            hist.append(inp)
         inp = input('tbh (recording) $ ')
 
     return hist
@@ -140,7 +145,8 @@ def parse_args():
 def parse_exceptions(args):
     exceptions = {}
     num_replacements = None
-    for arg in vars(args)['except']:
+    arg_exceptions = vars(args)['except'] or []
+    for arg in arg_exceptions:
         if arg != 'opposite':
             key, val = arg.split('=')
             exceptions[key] = val.split(',')
@@ -169,7 +175,7 @@ if __name__ == '__main__':
     if args.command == 'record':
         save(record(), macro=args.macro)
     elif args.command == 'same':
-        opposite = 'opposite' in vars(args)['except']
+        opposite = vars(args)['except'] is not None and 'opposite' in vars(args)['except']
         exceptions = parse_exceptions(args)
         execute(load(macro=args.macro), exceptions=exceptions, opposite=opposite)
     elif args.command == 'fuk':
