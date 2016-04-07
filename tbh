@@ -7,11 +7,17 @@ import os
 F_NAME = os.path.join(os.path.join(os.path.expanduser('~'), '.same'))
 
 
-def load():
+def load(macro=None, all_macros=False):
     """Load history from ~/.same"""
     try:
         with open(F_NAME, 'r') as f:
-            return json.loads(f.read())
+            hist = json.loads(f.read())
+            if all_macros:
+                return hist
+            elif macro not in hist:
+                return []
+            else:
+                return hist[macro]
     except FileNotFoundError:
         return {}
 
@@ -39,11 +45,12 @@ def record():
 
     return hist
 
-def save(commands, macro='dude'):
+def save(commands, macro=None):
     """Save commands to ~/.same"""
+    if macro is None: macro = 'dude'
     if not commands: return
 
-    hist = load()
+    hist = load(all_macros=True)
     hist[macro] = commands
 
     with open(F_NAME, 'w') as f:
@@ -51,11 +58,12 @@ def save(commands, macro='dude'):
     
     print('gottem')
 
-def delete(macro='dude'):
-    hist = load()
+def delete(macro=None):
+    hist = load(all_macros=True)
     
+    if macro is None: macro = 'dude'
     if macro not in hist:
-        print('macro not found')
+        print('macro not found: ' + macro)
         return
 
     del hist[macro]
@@ -65,26 +73,43 @@ def delete(macro='dude'):
 
     print(macro + ' got rekt')
 
+def find(macro=None):
+    hist = load(all_macros=True)
+
+    if macro is None:
+        print('macros: ' + ', '.join(hist.keys()))
+    elif macro not in hist:
+        print('macro not found: ' + macro)
+        return
+
+    else:
+        print(macro + ': ' + hist[macro])
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Record and execute bash macros.")
     subparsers = parser.add_subparsers(help="sucommand help", dest='command')
 
     default_parser = subparsers.add_parser('record',
-            description="Default command. Record series of bash commands",
-            help='Default command. record help')
-    default_parser.add_argument('macro', help='The macro to modify', nargs='?', default='dude')
+            description="Record series of bash commands",
+            help='(DEFAULT) record help')
+    default_parser.add_argument('macro', help='The macro to modify', nargs='?')
 
     fuk_parser = subparsers.add_parser('fuk',
             description="Delete a macro",
             help='fuk help')
-    fuk_parser.add_argument('macro', help='The macro to modify', nargs='?', default='dude')
+    fuk_parser.add_argument('macro', help='The macro to modify', nargs='?')
 
     same_parser = subparsers.add_parser('same',
             description="Execute a saved macro",
             help='same help')
-    same_parser.add_argument('macro', help='The macro to modify', nargs='?', default='dude')
+    same_parser.add_argument('macro', help='The macro to modify', nargs='?')
+    
+    wtf_parser = subparsers.add_parser('wtf',
+            description="Find macro names or definitions",
+            help='wtf help')
+    wtf_parser.add_argument('macro', help='The macro to modify', nargs='?')
 
-    if len(sys.argv) == 1 or sys.argv[1] not in ['record', 'fuk', 'same']:
+    if len(sys.argv) == 1 or sys.argv[1] not in ['record', 'fuk', 'same', 'wtf', '-h', '--help']:
         args = parser.parse_args(['record'] + sys.argv[1:])
     else:
         args = parser.parse_args()
@@ -92,6 +117,10 @@ if __name__ == '__main__':
     if args.command == 'record':
         save(record(), macro=args.macro)
     elif args.command == 'same':
-        execute(load()[args.macro])
+        execute(load(macro=args.macro))
     elif args.command == 'fuk':
         delete(args.macro)
+    elif args.command == 'wtf':
+        find(args.macro)
+    else:
+        parser.print_help()
