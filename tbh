@@ -80,10 +80,8 @@ def find(macro=None):
         print('macros: ' + ', '.join(hist.keys()))
     elif macro not in hist:
         print('macro not found: ' + macro)
-        return
-
     else:
-        print(macro + ': ' + hist[macro])
+        print(macro + ': ' + str(hist[macro]))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Record and execute bash macros.")
