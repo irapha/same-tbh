@@ -111,6 +111,20 @@ same $ rm bro
 gottem
 ```
 
+You can execute a macro without printing to stdout with `stfu`.
+
+```
+$ tbh
+tbh (recording) $ mkdir hey
+tbh (recording) $ donezo
+gottem
+$ rm -rf hey
+$ tbh same except stfu
+$ ls
+hey      other_files
+$
+```
+
 Finally, if you ever want to execute the commands in reverse order:
 
 ```
