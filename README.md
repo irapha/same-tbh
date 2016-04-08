@@ -5,6 +5,8 @@ Vim-like macros for bash
 Usage:
 =====
 
+`$ sudo -H python3 setup.py install` to install.
+
 `$ tbh` to start recording bash commands. `donezo` to stop recording.
 
 ```
