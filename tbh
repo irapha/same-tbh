@@ -3,6 +3,7 @@ import argparse
 import json
 import sys
 import os
+from random import choice
 
 F_NAME = os.path.join(os.path.join(os.path.expanduser('~'), '.same'))
 
@@ -92,7 +93,7 @@ def delete(macro=None):
     with open(F_NAME, 'w') as f:
         f.write(json.dumps(hist))
 
-    print(macro + ' got rekt')
+    print(choice([(macro + ' got rekt'), ('rip ' + macro)]))
 
 def find(macro=None):
     """Finds and lists macro names, or a specified macro"""
@@ -100,7 +101,7 @@ def find(macro=None):
 
     if macro is None:
         if len(hist) == 0:
-            print('no macros saved')
+            print('no macros saved. git gud')
         else:
             print('macros: ' + ', '.join(hist.keys()))
     elif macro not in hist:
