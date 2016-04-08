@@ -3,7 +3,7 @@ Vim-like macros for bash
 
 
 Usage:
-=====
+-----
 
 `$ sudo -H python3 setup.py install` to install.
 
@@ -31,7 +31,7 @@ gottem
 
 
 Named Macros
-============
+------------
 
 You can name macros by doing `$ tbh macro_name`. Then execute it with `$ tbh same macro_name`.
 You can also execute saved macros within macros (but you can't record within a recording).
@@ -54,7 +54,7 @@ dude got rekt
 
 
 Variables
-=========
+---------
 
 This is what makes this useful. You can change anything in the saved commands with the keyword `except`.
 
@@ -129,7 +129,7 @@ gottem
 
 
 Cool stuff
-==========
+----------
 
 If you make a macro that runs the macro, then run the macro, you go in an infinite loop.
 
