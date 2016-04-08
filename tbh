@@ -19,8 +19,8 @@ def load(macro=None, all_macros=False):
                 return []
             else:
                 return hist[macro]
-    except FileNotFoundError:
-        return {}
+    except (FileNotFoundError, json.decoder.JSONDecodeError):
+        return {} if all_macros else []
 
 def execute(commands, exceptions={}, opposite=False, stfu=False):
     """Execute a list of bash commands."""
