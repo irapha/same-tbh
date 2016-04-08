@@ -22,10 +22,10 @@ def load(macro=None, all_macros=False):
     except FileNotFoundError:
         return {}
 
-def execute(commands, exceptions={}, opposite=False):
+def execute(commands, exceptions={}, opposite=False, stfu=False):
     """Execute a list of bash commands."""
     if not commands: 
-        print('nothing to same')
+        if not stfu: print('nothing to same')
         return
 
     if opposite:
@@ -35,7 +35,7 @@ def execute(commands, exceptions={}, opposite=False):
     if len(replacements) == 0:
         # nothing to replace
         for inp in commands:
-            print('same $ ' + inp)
+            if not stfu: print('same $ ' + inp)
             os.system(inp)
     else:
         for replacement in replacements:
@@ -43,10 +43,10 @@ def execute(commands, exceptions={}, opposite=False):
                 for k, v in zip(keys, replacement):
                     inp = inp.replace(k, v)
             
-                print('same $ ' + inp)
+                if not stfu: print('same $ ' + inp)
                 os.system(inp)
 
-    print('gottem')
+    if not stfu: print('gottem')
 
 def record():
     """Record a list of bash command."""
@@ -147,7 +147,7 @@ def parse_exceptions(args):
     num_replacements = None
     arg_exceptions = vars(args)['except'] or []
     for arg in arg_exceptions:
-        if arg != 'opposite':
+        if arg not in ['opposite', 'stfu']:
             key, val = arg.split('=')
             exceptions[key] = val.split(',')
 
@@ -176,8 +176,9 @@ if __name__ == '__main__':
         save(record(), macro=args.macro)
     elif args.command == 'same':
         opposite = vars(args)['except'] is not None and 'opposite' in vars(args)['except']
+        stfu = vars(args)['except'] is not None and 'stfu' in vars(args)['except']
         exceptions = parse_exceptions(args)
-        execute(load(macro=args.macro), exceptions=exceptions, opposite=opposite)
+        execute(load(macro=args.macro), exceptions=exceptions, opposite=opposite, stfu=stfu)
     elif args.command == 'fuk':
         delete(args.macro)
     elif args.command == 'wtf':
