@@ -2,6 +2,7 @@
 import argparse
 import json
 import sys
+import subprocess as sp
 import os
 
 F_NAME = os.path.join(os.path.join(os.path.expanduser('~'), '.same'))
@@ -19,8 +20,8 @@ def load(macro=None, all_macros=False):
                 return []
             else:
                 return hist[macro]
-    except FileNotFoundError:
-        return {}
+    except (FileNotFoundError, json.decoder.JSONDecodeError):
+        return {} if all_macros else []
 
 def execute(commands, exceptions={}, opposite=False, stfu=False):
     """Execute a list of bash commands."""
@@ -31,12 +32,15 @@ def execute(commands, exceptions={}, opposite=False, stfu=False):
     if opposite:
         commands = reversed(commands)
 
+    proc = sp.Popen('/bin/sh', stdin=sp.PIPE)
+
     keys, replacements = exceptions
     if len(replacements) == 0:
         # nothing to replace
         for inp in commands:
             if not stfu: print('same $ ' + inp)
-            os.system(inp)
+            proc.stdin.write(str.encode(inp) + b'\n')
+            proc.stdin.flush()
     else:
         for replacement in replacements:
             for inp in commands:
@@ -44,14 +48,18 @@ def execute(commands, exceptions={}, opposite=False, stfu=False):
                     inp = inp.replace(k, v)
             
                 if not stfu: print('same $ ' + inp)
-                os.system(inp)
+                proc.stdin.write(str.encode(inp) + b'\n')
+                proc.stdin.flush()
 
+    proc.terminate()
     if not stfu: print('gottem')
 
 def record():
     """Record a list of bash command."""
     hist = []
     inp = input('tbh (recording) $ ')
+    
+    proc = sp.Popen('/bin/sh', stdin=sp.PIPE)
 
     while not inp == 'donezo':
         # only allow running tbh inside tbh if we're wtf-ing or same-ing
@@ -59,10 +67,12 @@ def record():
                 or not any(x == inp.split(' ')[1] for x in ['wtf', 'same'])):
             print('pls no')
         else:
-            os.system(inp)
+            proc.stdin.write(str.encode(inp) + b'\n')
+            proc.stdin.flush()
             hist.append(inp)
         inp = input('tbh (recording) $ ')
 
+    proc.terminate()
     return hist
 
 def save(commands, macro=None):
